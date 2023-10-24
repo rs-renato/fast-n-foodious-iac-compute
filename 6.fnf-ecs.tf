@@ -46,11 +46,12 @@ resource "aws_ecs_task_definition" "fnf-task-definition" {
   requires_compatibilities = ["FARGATE"]
   cpu = 512
   memory = 1024
-  execution_role_arn = "arn:aws:iam::438194348765:role/ecsTaskExecutionRole"
+  execution_role_arn = aws_iam_role.ecsTaskExecutionRole.arn
   runtime_platform {
     cpu_architecture = "X86_64"
     operating_system_family = "LINUX"
   }
+  depends_on = [ aws_iam_role.ecsTaskExecutionRole ]
 
   container_definitions = <<EOF
   [
@@ -66,7 +67,7 @@ resource "aws_ecs_task_definition" "fnf-task-definition" {
           "containerPort": 3000,
           "hostPort": 3000,
           "protocol": "TCP",
-          "appProtocol": "HTTP"
+          "appProtocol": "http"
         }
       ],
       "essential": true,
