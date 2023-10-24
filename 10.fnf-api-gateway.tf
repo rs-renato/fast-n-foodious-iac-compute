@@ -24,6 +24,16 @@ resource "aws_apigatewayv2_integration" "fnf-api-integration-oauth" {
   depends_on = [ aws_lambda_function.fnf-lambda-authorizer ]
 }
 
+# integracao api gateway com o lambda create user, na rota POST v1/cognito/createUser
+resource "aws_apigatewayv2_integration" "fnf-api-integration-create-user" {
+  api_id           = aws_apigatewayv2_api.fnf-api.id
+  integration_type = "AWS_PROXY"
+  integration_uri  = aws_lambda_function.fnf-lambda-create-user.arn
+  integration_method = "POST" 
+  passthrough_behavior = "WHEN_NO_MATCH"
+  depends_on = [ aws_lambda_function.fnf-lambda-create-user ]
+}
+
 # rota para todas os paths, com autenticacao/autorizacao JWT via Cognito
 resource "aws_apigatewayv2_route" "fnf-api-route" {
   api_id = aws_apigatewayv2_api.fnf-api.id
@@ -39,6 +49,16 @@ resource "aws_apigatewayv2_route" "fnf-api-route-token" {
   api_id = aws_apigatewayv2_api.fnf-api.id
   route_key = "POST /oauth2/token"
   target = "integrations/${aws_apigatewayv2_integration.fnf-api-integration-oauth.id}"
+}
+
+# rota criacao de user, em POST v1/cognito/createUser
+resource "aws_apigatewayv2_route" "fnf-api-route-create-user" {
+  api_id = aws_apigatewayv2_api.fnf-api.id
+  route_key = "POST /v1/cognito/createUser"
+  target = "integrations/${aws_apigatewayv2_integration.fnf-api-integration-create-user.id}"
+  authorizer_id = aws_apigatewayv2_authorizer.fnf-api-authorizer.id
+  depends_on = [ aws_apigatewayv2_authorizer.fnf-api-authorizer ]
+  authorization_type = "JWT"
 }
 
 # autorizer JWT via Cognito
