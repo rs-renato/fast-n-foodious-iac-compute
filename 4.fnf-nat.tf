@@ -1,6 +1,6 @@
 # configuracqo de nat vpc
 resource "aws_eip" "nat" {
-  vpc = true
+  domain = "vpc"
 }
 
 # configuracao de nat gatway
