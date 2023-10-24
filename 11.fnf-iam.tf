@@ -13,20 +13,6 @@ resource "aws_iam_role" "ecsTaskExecutionRole" {
   })
 }
 
-# resource "aws_iam_role" "ecsTaskRole" {
-#   name = "ecsTaskRole"
-#   assume_role_policy = jsonencode({
-#     Version = "2012-10-17",
-#     Statement = [{
-#       Effect = "Allow",
-#       Principal = {
-#         Service = "ecs-tasks.amazonaws.com"
-#       },
-#       Action = "sts:AssumeRole"
-#     }]
-#   })
-# }
-
 # configuracao de role IAM para o lambda
 resource "aws_iam_role" "fnf-lambda-iam-role" {
   name = "fnf-lambda-iam-role"
