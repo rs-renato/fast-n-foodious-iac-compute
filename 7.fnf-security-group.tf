@@ -41,3 +41,25 @@ resource "aws_security_group" "fnf-cluster-security-group" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
+// configuracao de security group do database
+resource "aws_security_group" "fnf-database-security-group" {
+  name        = "fnf-database-security-group"
+  description = "Allow traffic from fnf-cluster-security-group on port 3306"
+  vpc_id      = aws_vpc.fnf-vpc.id
+  
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  
+  egress {
+    description = "Allow all outbound traffic"
+    from_port  = 0
+    to_port    = 0
+    protocol   = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
