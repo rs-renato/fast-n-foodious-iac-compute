@@ -18,20 +18,20 @@ resource "aws_apigatewayv2_integration" "fnf-api-integration" {
 resource "aws_apigatewayv2_integration" "fnf-api-integration-oauth" {
   api_id           = aws_apigatewayv2_api.fnf-api.id
   integration_type = "AWS_PROXY"
-  integration_uri  = aws_lambda_function.fnf-lambda-authorizer.invoke_arn
+  integration_uri = data.terraform_remote_state.lambda_state.outputs.fnf-lambda-authorizer_invoke_arn // aws_lambda_function.fnf-lambda-authorizer.invoke_arn
   integration_method = "POST" 
   passthrough_behavior = "WHEN_NO_MATCH"
-  depends_on = [ aws_lambda_function.fnf-lambda-authorizer ]
+  depends_on = [ data.terraform_remote_state.lambda_state ] // [ aws_lambda_function.fnf-lambda-authorizer ]
 }
 
-# integracao api gateway com o lambda create user, na rota POST v1/cognito/createUser
+# integracao api gateway com o lambda create user, na rota POST v2/cliente
 resource "aws_apigatewayv2_integration" "fnf-api-integration-create-user" {
   api_id           = aws_apigatewayv2_api.fnf-api.id
   integration_type = "AWS_PROXY"
-  integration_uri  = aws_lambda_function.fnf-lambda-create-user.arn
+  integration_uri  = data.terraform_remote_state.lambda_state.outputs.fnf-lambda-create-user_arn // aws_lambda_function.fnf-lambda-create-user.arn
   integration_method = "POST" 
   passthrough_behavior = "WHEN_NO_MATCH"
-  depends_on = [ aws_lambda_function.fnf-lambda-create-user ]
+  depends_on = [ data.terraform_remote_state.lambda_state ] // [ aws_lambda_function.fnf-lambda-create-user ]
 }
 
 # rota para todas os paths, com autenticacao/autorizacao JWT via Cognito
@@ -51,10 +51,10 @@ resource "aws_apigatewayv2_route" "fnf-api-route-token" {
   target = "integrations/${aws_apigatewayv2_integration.fnf-api-integration-oauth.id}"
 }
 
-# rota criacao de user, em POST v1/cognito/createUser
+# rota criacao de user, em POST v2/cliente
 resource "aws_apigatewayv2_route" "fnf-api-route-create-user" {
   api_id = aws_apigatewayv2_api.fnf-api.id
-  route_key = "POST /v1/cognito/createUser"
+  route_key = "POST /v2/cliente"
   target = "integrations/${aws_apigatewayv2_integration.fnf-api-integration-create-user.id}"
   authorizer_id = aws_apigatewayv2_authorizer.fnf-api-authorizer.id
   depends_on = [ aws_apigatewayv2_authorizer.fnf-api-authorizer ]
