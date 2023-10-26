@@ -1,6 +1,15 @@
+data "terraform_remote_state" "lambda_state" {
+  backend = "s3"
+  config = {
+    bucket  = "fnf-terraform-fmr"
+    key     = "fnf-lambda.tfstate"
+    region  = "us-east-1"
+  }
+}
+
 resource "aws_cognito_user_pool" "fnf-user-pool" {
     name = "fnf-user-pool"
-    username_attributes        = ["email", "phone_number"]
+    # username_attributes        = ["email", "phone_number"]
     auto_verified_attributes  = ["email"]
     mfa_configuration = "OFF"
 
@@ -38,8 +47,8 @@ resource "aws_cognito_user_pool" "fnf-user-pool" {
     }
 
     lambda_config {
-      pre_token_generation = aws_lambda_function.fnf-lambda-pre-token-authorizer.arn
-      pre_sign_up = aws_lambda_function.fnf-lambda-pre-signup.arn
+      pre_token_generation = data.terraform_remote_state.lambda_state.outputs.fnf-lambda-pre-token-authorizer_arn // aws_lambda_function.fnf-lambda-pre-token-authorizer.arn
+      pre_sign_up = data.terraform_remote_state.lambda_state.outputs.fnf-lambda-pre-signup_arn // aws_lambda_function.fnf-lambda-pre-signup.arn
     }
 }
 
@@ -105,7 +114,7 @@ resource "null_resource" "update_lambda_environment" {
 
   provisioner "local-exec" {
     command = <<EOT
-      aws lambda update-function-configuration --function-name ${aws_lambda_function.fnf-lambda-pre-signup.function_name} \
+      aws lambda update-function-configuration --function-name ${data.terraform_remote_state.lambda_state.outputs.fnf-lambda-pre-signup_function_name} \
       --environment "Variables={API_COGNITO_URL=https://${aws_cognito_user_pool_domain.fnf-domain.domain}.auth.us-east-1.amazoncognito.com/,API_GATEWAY_URL=${aws_apigatewayv2_stage.fnf-api-deployment.invoke_url},CLIENT_ID=${aws_cognito_user_pool_client.fnf-client.id},CLIENT_SECRET=${aws_cognito_user_pool_client.fnf-client.client_secret}}"
     EOT
   }
