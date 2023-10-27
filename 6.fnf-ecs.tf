@@ -53,11 +53,14 @@ resource "aws_ecs_task_definition" "fnf-task-definition" {
   }
   depends_on = [ aws_iam_role.ecsTaskExecutionRole ]
 
+  // 571341489776.dkr.ecr.us-east-1.amazonaws.com/fast-n-foodious:latest - felipe
+  // 438194348765.dkr.ecr.us-east-1.amazonaws.com/fast-n-foodious:latest
+  
   container_definitions = <<EOF
   [
     {
       "name": "fast-n-foodious",
-      "image": "438194348765.dkr.ecr.us-east-1.amazonaws.com/fast-n-foodious:latest",
+      "image": "571341489776.dkr.ecr.us-east-1.amazonaws.com/fast-n-foodious:latest",
       "cpu": 512,
       "memory": 1024,
       "memoryReservation": 1024,
