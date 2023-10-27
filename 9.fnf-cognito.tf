@@ -1,12 +1,3 @@
-data "terraform_remote_state" "lambda_state" {
-  backend = "s3"
-  config = {
-    bucket  = "fnf-terraform-fmr"
-    key     = "fnf-lambda.tfstate"
-    region  = "us-east-1"
-  }
-}
-
 resource "aws_cognito_user_pool" "fnf-user-pool" {
     name = "fnf-user-pool"
     # username_attributes        = ["email", "phone_number"]
