@@ -1,42 +1,42 @@
 # configuracao do cluster ECS
 resource "aws_ecs_cluster" "fnf-cluster" {
-    name = "fnf-cluster"
+  name = "fnf-cluster"
 }
 
 # configuracao service com Fargate
 resource "aws_ecs_service" "fnf-service" {
-    name = "fnf-service"
-    task_definition = aws_ecs_task_definition.fnf-task-definition.arn
-    launch_type = "FARGATE"
-    cluster = aws_ecs_cluster.fnf-cluster.id
-    desired_count = 2
-    
-    network_configuration {
-      assign_public_ip = false
-      security_groups = [
-        aws_security_group.fnf-cluster-security-group.id
-      ]
-      subnets = [
-        aws_subnet.fnf-subnet-private1-us-east-1a.id, 
-        aws_subnet.fnf-subnet-private2-us-east-1b.id
-      ]
-    }
-
-    load_balancer {
-      target_group_arn = aws_lb_target_group.fnf-lb-target-group.arn
-      container_name = "fast-n-foodious"
-      container_port = 3000
-    }
-
-    depends_on = [ 
-        aws_ecs_task_definition.fnf-task-definition,
-        aws_alb.fnf-alb
+  name = "fnf-service"
+  task_definition = aws_ecs_task_definition.fnf-task-definition.arn
+  launch_type = "FARGATE"
+  cluster = aws_ecs_cluster.fnf-cluster.id
+  desired_count = 2
+  
+  network_configuration {
+    assign_public_ip = false
+    security_groups = [
+      data.terraform_remote_state.network_state.outputs.fnf-cluster-security-group_id // aws_security_group.fnf-cluster-security-group.id
     ]
+    subnets = [
+      data.terraform_remote_state.network_state.outputs.fnf-subnet-private1-us-east-1a_id, // aws_subnet.fnf-subnet-private1-us-east-1a.id, 
+      data.terraform_remote_state.network_state.outputs.fnf-subnet-private2-us-east-1b_id  // aws_subnet.fnf-subnet-private2-us-east-1b.id
+    ]
+  }
 
-    lifecycle {
-      create_before_destroy = true
-      ignore_changes        = [task_definition]
-    }
+  load_balancer {
+    target_group_arn = data.terraform_remote_state.network_state.outputs.fnf-lb-target-group_arn // aws_lb_target_group.fnf-lb-target-group.arn
+    container_name = "fast-n-foodious"
+    container_port = 3000
+  }
+
+  depends_on = [ 
+    aws_ecs_task_definition.fnf-task-definition,
+    data.terraform_remote_state.network_state // aws_alb.fnf-alb
+  ]
+
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes        = [task_definition]
+  }
 }
 
 # configuracao das tasks definitions para deploy do container 
@@ -47,6 +47,7 @@ resource "aws_ecs_task_definition" "fnf-task-definition" {
   cpu = 512
   memory = 1024
   execution_role_arn = aws_iam_role.ecsTaskExecutionRole.arn
+
   runtime_platform {
     cpu_architecture = "X86_64"
     operating_system_family = "LINUX"
