@@ -13,11 +13,13 @@ resource "aws_iam_role" "ecsTaskExecutionRole" {
   })
 }
 
+
 resource "aws_iam_policy_attachment" "ecsTaskExecutionRolePolicyAttachment" {
   name       = "AmazonECSTaskExecutionRolePolicyAttachment"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
   roles      = [aws_iam_role.ecsTaskExecutionRole.name]
 }
+
 
 resource "aws_iam_policy_attachment" "ecsTaskExecutionRolePolicyAttachmentCloudWatch" {
   name       = "AmazonECSTaskExecutionRolePolicyAttachment"
