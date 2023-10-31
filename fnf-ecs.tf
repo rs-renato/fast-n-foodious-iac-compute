@@ -38,6 +38,8 @@ resource "aws_ecs_service" "fnf-service" {
     }
 }
 
+data "aws_caller_identity" "current" {}
+
 # configuracao das tasks definitions para deploy do container 
 resource "aws_ecs_task_definition" "fnf-task-definition" {
   family                   = "fnf-task-definition"
@@ -56,7 +58,7 @@ resource "aws_ecs_task_definition" "fnf-task-definition" {
   [
     {
       "name": "fast-n-foodious",
-      "image": "438194348765.dkr.ecr.us-east-1.amazonaws.com/fast-n-foodious:latest",
+      "image": "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/fast-n-foodious:latest",
       "cpu": 512,
       "memory": 1024,
       "memoryReservation": 1024,
