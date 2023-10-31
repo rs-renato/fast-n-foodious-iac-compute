@@ -2,7 +2,7 @@
 
 ![Static Badge](https://img.shields.io/badge/IaC-black?style=for-the-badge) ![Terraform](https://img.shields.io/badge/terraform-%235835CC.svg?style=for-the-badge&logo=terraform&logoColor=white)
 
-# 🍔 Fast & Foodious - IaC ![Static Badge](https://img.shields.io/badge/v3.0.0-version?logo=&color=%232496ED&labelColor=white&label=fast-n-foodious)
+# 🍔 Fast & Foodious - IaC ![Github Actions](https://github.com/rodrigo-ottero/fast-n-foodious-iac-compute/actions/workflows/fnf-pipeline.yml/badge.svg?branch=main) ![Static Badge](https://img.shields.io/badge/v3.0.0-version?logo=&color=%232496ED&labelColor=white&label=fast-n-foodious)
 Sistema de auto-atendimento de fast food. Projeto de conclusão da Fase 03 da pós gradução em Software Architecture.
 
 ![fast-n-foodious-aws](fast-n-foodious-aws.png)
