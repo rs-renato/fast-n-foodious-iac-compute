@@ -14,23 +14,22 @@ resource "aws_ecs_service" "fnf-service" {
     network_configuration {
       assign_public_ip = false
       security_groups = [
-        aws_security_group.fnf-cluster-security-group.id
+        data.terraform_remote_state.network.outputs.fnf-cluster-security-group_id
       ]
       subnets = [
-        aws_subnet.fnf-subnet-private1-us-east-1a.id, 
-        aws_subnet.fnf-subnet-private2-us-east-1b.id
+        data.terraform_remote_state.network.outputs.fnf-subnet-private1-us-east-1a_id, 
+        data.terraform_remote_state.network.outputs.fnf-subnet-private2-us-east-1b_id
       ]
     }
 
     load_balancer {
-      target_group_arn = aws_lb_target_group.fnf-lb-target-group.arn
+      target_group_arn = data.terraform_remote_state.network.outputs.fnf-lb-target-group_arn
       container_name = "fast-n-foodious"
       container_port = 3000
     }
 
     depends_on = [ 
         aws_ecs_task_definition.fnf-task-definition,
-        aws_alb.fnf-alb
     ]
 
     lifecycle {
@@ -46,11 +45,12 @@ resource "aws_ecs_task_definition" "fnf-task-definition" {
   requires_compatibilities = ["FARGATE"]
   cpu = 512
   memory = 1024
-  execution_role_arn = "arn:aws:iam::438194348765:role/ecsTaskExecutionRole"
+  execution_role_arn = aws_iam_role.ecsTaskExecutionRole.arn
   runtime_platform {
     cpu_architecture = "X86_64"
     operating_system_family = "LINUX"
   }
+  depends_on = [ aws_iam_role.ecsTaskExecutionRole ]
 
   container_definitions = <<EOF
   [
@@ -66,14 +66,22 @@ resource "aws_ecs_task_definition" "fnf-task-definition" {
           "containerPort": 3000,
           "hostPort": 3000,
           "protocol": "TCP",
-          "appProtocol": "HTTP"
+          "appProtocol": "http"
         }
       ],
       "essential": true,
       "environment": [
         {
           "name": "NODE_ENV",
-          "value": "local-mock-repository"
+          "value": "prod"
+        },
+        {
+          "name": "MYSQL_HOST",
+          "value": "${data.terraform_remote_state.storage.outputs.fnf-rds-cluster_endpoint}"
+        },
+        {
+          "name": "MYSQL_PASSWORD",
+          "value": "${data.terraform_remote_state.storage.outputs.fnf-rds-cluster_master_password}"
         }
       ],
       "logConfiguration": {
