@@ -24,7 +24,7 @@ resource "aws_ecs_service" "fnf-produto-service" {
 
     load_balancer {
       target_group_arn = data.terraform_remote_state.network.outputs.fnf-lb-ms-produto-target-group_arn
-      container_name = "fast-n-foodious-produto"
+      container_name = "fast-n-foodious-ms-produto"
       container_port = 3000
     }
 
@@ -57,14 +57,14 @@ resource "aws_ecs_task_definition" "fnf-ms-produto-task-definition" {
   container_definitions = <<EOF
   [
     {
-      "name": "fast-n-foodious-produto",
-      "image": "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/fast-n-foodious-produto:latest",
+      "name": "fast-n-foodious-ms-produto",
+      "image": "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/fast-n-foodious-ms-produto:latest",
       "cpu": 512,
       "memory": 1024,
       "memoryReservation": 1024,
       "portMappings": [
         {
-          "name": "fast-n-foodious-produto-3000-tcp",
+          "name": "fast-n-foodious-ms-produto-3000-tcp",
           "containerPort": 3000,
           "hostPort": 3000,
           "protocol": "TCP",
