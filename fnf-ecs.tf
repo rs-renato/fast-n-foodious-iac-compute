@@ -4,8 +4,8 @@ resource "aws_ecs_cluster" "fnf-cluster" {
 }
 
 # configuracao service com Fargate
-resource "aws_ecs_service" "fnf-produto-service" {
-    name = "fnf-produto-service"
+resource "aws_ecs_service" "fast-n-foodious-ms-produto-service" {
+    name = "fast-n-foodious-ms-produto-service"
     task_definition = aws_ecs_task_definition.fnf-ms-produto-task-definition.arn
     launch_type = "FARGATE"
     cluster = aws_ecs_cluster.fnf-cluster.id
