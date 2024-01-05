@@ -4,9 +4,9 @@ resource "aws_ecs_cluster" "fnf-cluster" {
 }
 
 # configuracao service com Fargate
-resource "aws_ecs_service" "fnf-service" {
-    name = "fnf-service"
-    task_definition = aws_ecs_task_definition.fnf-task-definition.arn
+resource "aws_ecs_service" "fnf-produto-service" {
+    name = "fnf-produto-service"
+    task_definition = aws_ecs_task_definition.fnf-ms-produto-task-definition.arn
     launch_type = "FARGATE"
     cluster = aws_ecs_cluster.fnf-cluster.id
     desired_count = 2
@@ -23,13 +23,13 @@ resource "aws_ecs_service" "fnf-service" {
     }
 
     load_balancer {
-      target_group_arn = data.terraform_remote_state.network.outputs.fnf-lb-target-group_arn
-      container_name = "fast-n-foodious"
+      target_group_arn = data.terraform_remote_state.network.outputs.fnf-lb-ms-produto-target-group_arn
+      container_name = "fast-n-foodious-produto"
       container_port = 3000
     }
 
     depends_on = [ 
-        aws_ecs_task_definition.fnf-task-definition,
+        aws_ecs_task_definition.fnf-ms-produto-task-definition,
     ]
 
     lifecycle {
@@ -41,12 +41,12 @@ resource "aws_ecs_service" "fnf-service" {
 data "aws_caller_identity" "current" {}
 
 # configuracao das tasks definitions para deploy do container 
-resource "aws_ecs_task_definition" "fnf-task-definition" {
-  family                   = "fnf-task-definition"
+resource "aws_ecs_task_definition" "fnf-ms-produto-task-definition" {
+  family                   = "fnf-ms-produto-task-definition"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu = 512
-  memory = 1024
+  memory = 768
   execution_role_arn = aws_iam_role.ecsTaskExecutionRole.arn
   runtime_platform {
     cpu_architecture = "X86_64"
@@ -57,14 +57,14 @@ resource "aws_ecs_task_definition" "fnf-task-definition" {
   container_definitions = <<EOF
   [
     {
-      "name": "fast-n-foodious",
-      "image": "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/fast-n-foodious:latest",
+      "name": "fast-n-foodious-produto",
+      "image": "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/fast-n-foodious-produto:latest",
       "cpu": 512,
-      "memory": 1024,
-      "memoryReservation": 1024,
+      "memory": 768,
+      "memoryReservation": 768,
       "portMappings": [
         {
-          "name": "fast-n-foodious-3000-tcp",
+          "name": "fast-n-foodious-produto-3000-tcp",
           "containerPort": 3000,
           "hostPort": 3000,
           "protocol": "TCP",
@@ -90,7 +90,7 @@ resource "aws_ecs_task_definition" "fnf-task-definition" {
         "logDriver": "awslogs",
         "options": {
           "awslogs-create-group": "true",
-          "awslogs-group": "/ecs/fnf-task-definition",
+          "awslogs-group": "/ecs/fnf-ms-produto-task-definition",
           "awslogs-region": "us-east-1",
           "awslogs-stream-prefix": "ecs"
         }
