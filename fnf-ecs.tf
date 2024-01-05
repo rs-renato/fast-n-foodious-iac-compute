@@ -46,7 +46,7 @@ resource "aws_ecs_task_definition" "fnf-ms-produto-task-definition" {
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu = 512
-  memory = 768
+  memory = 1024
   execution_role_arn = aws_iam_role.ecsTaskExecutionRole.arn
   runtime_platform {
     cpu_architecture = "X86_64"
@@ -60,8 +60,8 @@ resource "aws_ecs_task_definition" "fnf-ms-produto-task-definition" {
       "name": "fast-n-foodious-produto",
       "image": "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/fast-n-foodious-produto:latest",
       "cpu": 512,
-      "memory": 768,
-      "memoryReservation": 768,
+      "memory": 1024,
+      "memoryReservation": 1024,
       "portMappings": [
         {
           "name": "fast-n-foodious-produto-3000-tcp",
