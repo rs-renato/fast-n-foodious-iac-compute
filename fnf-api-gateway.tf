@@ -4,12 +4,12 @@ resource "aws_apigatewayv2_api" "fnf-api" {
   protocol_type = "HTTP"
 }
 
-# integracao gateway com o vpc link 
-resource "aws_apigatewayv2_integration" "fnf-api-integration" {
+# integracao gateway (produto) com o vpc link 
+resource "aws_apigatewayv2_integration" "fnf-api-integration-produto" {
   api_id = aws_apigatewayv2_api.fnf-api.id
   integration_type = "HTTP_PROXY"
   integration_method = "ANY"
-  integration_uri = data.terraform_remote_state.network.outputs.fnf-alb-http_arn
+  integration_uri = data.terraform_remote_state.network.outputs.fnf-alb-ms-produto-http-listener_arn
   connection_type = "VPC_LINK"
   connection_id = aws_apigatewayv2_vpc_link.fnf-vpc-link.id
 }
@@ -34,11 +34,21 @@ resource "aws_apigatewayv2_integration" "fnf-api-integration-create-user" {
   depends_on = [ aws_lambda_function.fnf-lambda-create-user ]
 }
 
-# rota para todas os paths, com autenticacao/autorizacao JWT via Cognito
-resource "aws_apigatewayv2_route" "fnf-api-route" {
+# rota para todas os paths produto, com autenticacao/autorizacao JWT via Cognito
+resource "aws_apigatewayv2_route" "fnf-api-produto-route" {
   api_id = aws_apigatewayv2_api.fnf-api.id
-  route_key = "ANY /{proxy+}"
-  target = "integrations/${aws_apigatewayv2_integration.fnf-api-integration.id}"
+  route_key = "ANY /v1/produto/{proxy+}"
+  target = "integrations/${aws_apigatewayv2_integration.fnf-api-integration-produto.id}"
+  authorizer_id = aws_apigatewayv2_authorizer.fnf-api-authorizer.id
+  depends_on = [ aws_apigatewayv2_authorizer.fnf-api-authorizer ]
+  authorization_type = "JWT"
+}
+
+# rota para todas os paths categoria, com autenticacao/autorizacao JWT via Cognito
+resource "aws_apigatewayv2_route" "fnf-api-categoria-route" {
+  api_id = aws_apigatewayv2_api.fnf-api.id
+  route_key = "ANY /v1/categoria/{proxy+}"
+  target = "integrations/${aws_apigatewayv2_integration.fnf-api-integration-produto.id}"
   authorizer_id = aws_apigatewayv2_authorizer.fnf-api-authorizer.id
   depends_on = [ aws_apigatewayv2_authorizer.fnf-api-authorizer ]
   authorization_type = "JWT"
