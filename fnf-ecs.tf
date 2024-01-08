@@ -3,6 +3,9 @@ data "aws_caller_identity" "current" {}
 # configuracao do cluster ECS
 resource "aws_ecs_cluster" "fnf-cluster" {
     name = "fnf-cluster"
+    service_connect_defaults {
+      namespace = aws_service_discovery_http_namespace.fnf-service-discovery-namespace.arn
+    }
 }
 
 # configuracao produto service com Fargate
@@ -30,6 +33,19 @@ resource "aws_ecs_service" "fast-n-foodious-ms-produto-service" {
       container_port = 3000
     }
 
+    service_connect_configuration {
+      enabled = true
+      namespace = "fast-n-foodious"
+      service {
+        discovery_name = "fast-n-foodious-ms-produto"
+        port_name = "fast-n-foodious-ms-produto-3000-tcp"
+        client_alias {
+          port = 3000
+          dns_name = "fast-n-foodious-ms-produto"
+        }
+      }
+    }
+
     depends_on = [ 
         aws_ecs_task_definition.fnf-ms-produto-task-definition,
     ]
@@ -38,6 +54,10 @@ resource "aws_ecs_service" "fast-n-foodious-ms-produto-service" {
       create_before_destroy = true
       ignore_changes        = [task_definition]
     }
+}
+
+resource "aws_service_discovery_http_namespace" "fnf-service-discovery-namespace" {
+  name        = "fast-n-foodious"
 }
 
 # configuracao pagamento service com Fargate
@@ -63,6 +83,19 @@ resource "aws_ecs_service" "fast-n-foodious-ms-pagamento-service" {
       target_group_arn = data.terraform_remote_state.network.outputs.fnf-lb-ms-pagamento-target-group_arn
       container_name = "fast-n-foodious-ms-pagamento"
       container_port = 3000
+    }
+
+    service_connect_configuration {
+      enabled = true
+      namespace = "fast-n-foodious"
+      service {
+        discovery_name = "fast-n-foodious-ms-pagamento"
+        port_name = "fast-n-foodious-ms-pagamento-3000-tcp"
+        client_alias {
+          port = 3000
+          dns_name = "fast-n-foodious-ms-pagamento"
+        }
+      }
     }
 
     depends_on = [ 
