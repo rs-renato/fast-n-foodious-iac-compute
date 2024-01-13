@@ -24,6 +24,16 @@ resource "aws_apigatewayv2_integration" "fnf-api-integration-pagamento" {
   connection_id = aws_apigatewayv2_vpc_link.fnf-vpc-link.id
 }
 
+# integracao gateway (pedido) com o vpc link 
+resource "aws_apigatewayv2_integration" "fnf-api-integration-pedido" {
+  api_id = aws_apigatewayv2_api.fnf-api.id
+  integration_type = "HTTP_PROXY"
+  integration_method = "ANY"
+  integration_uri = data.terraform_remote_state.network.outputs.fnf-alb-http-listener_arn
+  connection_type = "VPC_LINK"
+  connection_id = aws_apigatewayv2_vpc_link.fnf-vpc-link.id
+}
+
 # integracao api gateway com o lambda authorizer, na rota POST /oauth2/token
 resource "aws_apigatewayv2_integration" "fnf-api-integration-oauth" {
   api_id           = aws_apigatewayv2_api.fnf-api.id
@@ -69,6 +79,36 @@ resource "aws_apigatewayv2_route" "fnf-api-pagamento-route" {
   api_id = aws_apigatewayv2_api.fnf-api.id
   route_key = "ANY /v1/pagamento/{proxy+}"
   target = "integrations/${aws_apigatewayv2_integration.fnf-api-integration-pagamento.id}"
+  authorizer_id = aws_apigatewayv2_authorizer.fnf-api-authorizer.id
+  depends_on = [ aws_apigatewayv2_authorizer.fnf-api-authorizer ]
+  authorization_type = "JWT"
+}
+
+# rota para todas os paths pedido, com autenticacao/autorizacao JWT via Cognito
+resource "aws_apigatewayv2_route" "fnf-api-pedido-route" {
+  api_id = aws_apigatewayv2_api.fnf-api.id
+  route_key = "ANY /v1/pedido/{proxy+}"
+  target = "integrations/${aws_apigatewayv2_integration.fnf-api-integration-pedido.id}"
+  authorizer_id = aws_apigatewayv2_authorizer.fnf-api-authorizer.id
+  depends_on = [ aws_apigatewayv2_authorizer.fnf-api-authorizer ]
+  authorization_type = "JWT"
+}
+
+# rota para todas os paths item, com autenticacao/autorizacao JWT via Cognito
+resource "aws_apigatewayv2_route" "fnf-api-item-route" {
+  api_id = aws_apigatewayv2_api.fnf-api.id
+  route_key = "ANY /v1/item/{proxy+}"
+  target = "integrations/${aws_apigatewayv2_integration.fnf-api-integration-pedido.id}"
+  authorizer_id = aws_apigatewayv2_authorizer.fnf-api-authorizer.id
+  depends_on = [ aws_apigatewayv2_authorizer.fnf-api-authorizer ]
+  authorization_type = "JWT"
+}
+
+# rota para todas os paths cliente, com autenticacao/autorizacao JWT via Cognito
+resource "aws_apigatewayv2_route" "fnf-api-cliente-route" {
+  api_id = aws_apigatewayv2_api.fnf-api.id
+  route_key = "ANY /v1/cliente/{proxy+}"
+  target = "integrations/${aws_apigatewayv2_integration.fnf-api-integration-pedido.id}"
   authorizer_id = aws_apigatewayv2_authorizer.fnf-api-authorizer.id
   depends_on = [ aws_apigatewayv2_authorizer.fnf-api-authorizer ]
   authorization_type = "JWT"
