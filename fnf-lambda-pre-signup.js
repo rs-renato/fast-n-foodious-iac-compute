@@ -34,7 +34,7 @@ exports.handler = async (event) => {
         }
             
         // add usuario no sistema fast-n-foodious
-        response = await axios.post(`${apiGatewayUrl}v1/cliente`, cliente, {
+        response = await axios.post(`${apiGatewayUrl}v1/cliente/`, cliente, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
