@@ -1,3 +1,25 @@
+# # Default ECS Task Execution policy
+# data "aws_iam_policy" "amazon_ecs_task_execution_role_policy" {
+#   name = "AmazonECSTaskExecutionRolePolicy"
+# }
+
+# Default ECS Task Instance policy
+data "aws_iam_policy" "amazon_ec2_container_service_for_ec2_role" {
+  name = "AmazonEC2ContainerServiceforEC2Role"
+}
+
+data "aws_iam_policy_document" "ecs_assume_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    sid     = ""
+    effect  = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com", "ecs-tasks.amazonaws.com"]
+    }
+  }
+}
+
 # Criando a role ECS Task Execution
 resource "aws_iam_role" "ecsTaskExecutionRole" {
   name = "ecsTaskExecutionRole"
@@ -26,6 +48,12 @@ resource "aws_iam_role" "fnf-lambda-iam-role" {
       }
     }]
   })
+}
+
+resource "aws_iam_role" "ecs_instance_role" {
+  name                = "ecsInstanceRole"
+  managed_policy_arns = [data.aws_iam_policy.amazon_ec2_container_service_for_ec2_role.arn]
+  assume_role_policy  = data.aws_iam_policy_document.ecs_assume_role.json
 }
 
 # configuracao de policy IAM para o lambda
