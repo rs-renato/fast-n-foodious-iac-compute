@@ -3,14 +3,8 @@ data "aws_caller_identity" "current" {}
 # configuracao do cluster ECS
 resource "aws_ecs_cluster" "fnf-cluster" {
     name = "fnf-cluster"
-    service_connect_defaults {
-      namespace = aws_service_discovery_http_namespace.fnf-service-discovery-namespace.arn
-    }
 }
 
-resource "aws_service_discovery_http_namespace" "fnf-service-discovery-namespace" {
-  name        = "fast-n-foodious"
-}
 
 # configuracao produto service com Fargate
 resource "aws_ecs_service" "fast-n-foodious-ms-produto-service" {
@@ -18,7 +12,7 @@ resource "aws_ecs_service" "fast-n-foodious-ms-produto-service" {
     task_definition = aws_ecs_task_definition.fnf-ms-produto-task-definition.arn
     launch_type = "FARGATE"
     cluster = aws_ecs_cluster.fnf-cluster.id
-    desired_count = 2
+    desired_count = 1
     
     network_configuration {
       assign_public_ip = false
@@ -37,19 +31,6 @@ resource "aws_ecs_service" "fast-n-foodious-ms-produto-service" {
       container_port = 3000
     }
 
-    service_connect_configuration {
-      enabled = true
-      namespace = "fast-n-foodious"
-      service {
-        discovery_name = "fast-n-foodious-ms-produto"
-        port_name = "fast-n-foodious-ms-produto-3000-tcp"
-        client_alias {
-          port = 3000
-          dns_name = "fast-n-foodious-ms-produto"
-        }
-      }
-    }
-
     depends_on = [ 
         aws_ecs_task_definition.fnf-ms-produto-task-definition,
     ]
@@ -66,7 +47,7 @@ resource "aws_ecs_service" "fast-n-foodious-ms-pagamento-service" {
     task_definition = aws_ecs_task_definition.fnf-ms-pagamento-task-definition.arn
     launch_type = "FARGATE"
     cluster = aws_ecs_cluster.fnf-cluster.id
-    desired_count = 2
+    desired_count = 1
     
     network_configuration {
       assign_public_ip = false
@@ -85,21 +66,9 @@ resource "aws_ecs_service" "fast-n-foodious-ms-pagamento-service" {
       container_port = 3000
     }
 
-    service_connect_configuration {
-      enabled = true
-      namespace = "fast-n-foodious"
-      service {
-        discovery_name = "fast-n-foodious-ms-pagamento"
-        port_name = "fast-n-foodious-ms-pagamento-3000-tcp"
-        client_alias {
-          port = 3000
-          dns_name = "fast-n-foodious-ms-pagamento"
-        }
-      }
-    }
 
     depends_on = [ 
-        aws_ecs_task_definition.fnf-ms-produto-task-definition,
+        aws_ecs_task_definition.fnf-ms-pagamento-task-definition,
     ]
 
     lifecycle {
@@ -114,7 +83,7 @@ resource "aws_ecs_service" "fast-n-foodious-ms-pedido-service" {
     task_definition = aws_ecs_task_definition.fnf-ms-pedido-task-definition.arn
     launch_type = "FARGATE"
     cluster = aws_ecs_cluster.fnf-cluster.id
-    desired_count = 2
+    desired_count = 1
     
     network_configuration {
       assign_public_ip = false
@@ -133,21 +102,9 @@ resource "aws_ecs_service" "fast-n-foodious-ms-pedido-service" {
       container_port = 3000
     }
 
-    service_connect_configuration {
-      enabled = true
-      namespace = "fast-n-foodious"
-      service {
-        discovery_name = "fast-n-foodious-ms-pedido"
-        port_name = "fast-n-foodious-ms-pedido-3000-tcp"
-        client_alias {
-          port = 3000
-          dns_name = "fast-n-foodious-ms-pedido"
-        }
-      }
-    }
 
     depends_on = [ 
-        aws_ecs_task_definition.fnf-ms-produto-task-definition,
+        aws_ecs_task_definition.fnf-ms-pedido-task-definition,
     ]
 
     lifecycle {
@@ -163,6 +120,7 @@ resource "aws_ecs_task_definition" "fnf-ms-produto-task-definition" {
   requires_compatibilities = ["FARGATE"]
   cpu = 256
   memory = 512
+  task_role_arn = aws_iam_role.ecs_instance_role.arn
   execution_role_arn = aws_iam_role.ecsTaskExecutionRole.arn
   runtime_platform {
     cpu_architecture = "X86_64"
@@ -223,6 +181,7 @@ resource "aws_ecs_task_definition" "fnf-ms-pagamento-task-definition" {
   requires_compatibilities = ["FARGATE"]
   cpu = 256
   memory = 512
+  task_role_arn = aws_iam_role.ecs_instance_role.arn
   execution_role_arn = aws_iam_role.ecsTaskExecutionRole.arn
   runtime_platform {
     cpu_architecture = "X86_64"
@@ -249,6 +208,10 @@ resource "aws_ecs_task_definition" "fnf-ms-pagamento-task-definition" {
       ],
       "essential": true,
       "environment": [
+        {
+          "name": "MS_PEDIDO_INTEGRATION_URL",
+          "value": "${data.terraform_remote_state.network.outputs.fnf-alb_dns_name}"
+        },
         {
           "name": "NODE_ENV",
           "value": "prod"
@@ -283,6 +246,7 @@ resource "aws_ecs_task_definition" "fnf-ms-pedido-task-definition" {
   requires_compatibilities = ["FARGATE"]
   cpu = 256
   memory = 512
+  task_role_arn = aws_iam_role.ecs_instance_role.arn
   execution_role_arn = aws_iam_role.ecsTaskExecutionRole.arn
   runtime_platform {
     cpu_architecture = "X86_64"
@@ -309,6 +273,14 @@ resource "aws_ecs_task_definition" "fnf-ms-pedido-task-definition" {
       ],
       "essential": true,
       "environment": [
+        {
+          "name": "MS_PRODUTO_INTEGRATION_URL",
+          "value": "${data.terraform_remote_state.network.outputs.fnf-alb_dns_name}"
+        },
+        {
+          "name": "MS_PAGAMENTO_INTEGRATION_URL",
+          "value": "${data.terraform_remote_state.network.outputs.fnf-alb_dns_name}"
+        },
         {
           "name": "NODE_ENV",
           "value": "prod"

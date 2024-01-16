@@ -15,7 +15,7 @@ Repositório de criação de infraestrutura cloud AWS, responsável por criar os
 fast-n-foodious-iac-compute
 ├── fnf-api-gateway.tf                          # Definição de recurso API Gateway, com registro de rotas e controle de acesso de recursos
 ├── fnf-cognito.tf                              # Definição de recurso Cognito, para registro de usuários destinados a controle de acesso, autenticação e autorização
-├── fnf-ecs.tf                                  # Definição de recurso cluster ECS gerenciado com Fargate e reurcos de registry e discovery
+├── fnf-ecs.tf                                  # Definição de recurso cluster ECS gerenciado com Fargate
 ├── fnf-iam.tf                                  # Definição de recursos Roles, polices e permissões
 ├── fnf-lambda-authorizer.js                    # Lambda destinado a autorização de acesso aos recursos da API
 ├── fnf-lambda-axios-layer.zip                  # Layer axios, utilizada como dependância lambda
