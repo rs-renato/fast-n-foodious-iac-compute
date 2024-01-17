@@ -153,11 +153,11 @@ resource "aws_ecs_task_definition" "fnf-ms-produto-task-definition" {
         },
         {
           "name": "MYSQL_HOST",
-          "value": "${data.terraform_remote_state.storage.outputs.fnf-rds-cluster_endpoint}"
+          "value": "${data.terraform_remote_state.storage.outputs.fnf-rds-cluster-produto_endpoint}"
         },
         {
           "name": "MYSQL_PASSWORD",
-          "value": "${data.terraform_remote_state.storage.outputs.fnf-rds-cluster_master_password}"
+          "value": "${data.terraform_remote_state.storage.outputs.fnf-rds-cluster-produto_master_password}"
         }
       ],
       "logConfiguration": {
@@ -214,15 +214,11 @@ resource "aws_ecs_task_definition" "fnf-ms-pagamento-task-definition" {
         },
         {
           "name": "NODE_ENV",
-          "value": "prod"
+          "value": "local-mock-repository"
         },
         {
-          "name": "MYSQL_HOST",
-          "value": "${data.terraform_remote_state.storage.outputs.fnf-rds-cluster_endpoint}"
-        },
-        {
-          "name": "MYSQL_PASSWORD",
-          "value": "${data.terraform_remote_state.storage.outputs.fnf-rds-cluster_master_password}"
+          "name": "SERVER_PORT",
+          "value": "3000"
         }
       ],
       "logConfiguration": {
@@ -287,11 +283,11 @@ resource "aws_ecs_task_definition" "fnf-ms-pedido-task-definition" {
         },
         {
           "name": "MYSQL_HOST",
-          "value": "${data.terraform_remote_state.storage.outputs.fnf-rds-cluster_endpoint}"
+          "value": "${data.terraform_remote_state.storage.outputs.fnf-rds-cluster-pedido_endpoint}"
         },
         {
           "name": "MYSQL_PASSWORD",
-          "value": "${data.terraform_remote_state.storage.outputs.fnf-rds-cluster_master_password}"
+          "value": "${data.terraform_remote_state.storage.outputs.fnf-rds-cluster-pedido_master_password}"
         }
       ],
       "logConfiguration": {
