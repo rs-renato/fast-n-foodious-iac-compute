@@ -8,6 +8,12 @@ data "aws_iam_policy" "amazon_ec2_container_service_for_ec2_role" {
   name = "AmazonEC2ContainerServiceforEC2Role"
 }
 
+# Default ECS Task Instance policy
+data "aws_iam_policy" "amazon_ec2_container_service_for_documentdb_role" {
+  name = "AmazonDocDBElasticFullAccess"
+}
+
+
 data "aws_iam_policy_document" "ecs_assume_role" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -52,7 +58,7 @@ resource "aws_iam_role" "fnf-lambda-iam-role" {
 
 resource "aws_iam_role" "ecs_instance_role" {
   name                = "ecsInstanceRole"
-  managed_policy_arns = [data.aws_iam_policy.amazon_ec2_container_service_for_ec2_role.arn]
+  managed_policy_arns = [data.aws_iam_policy.amazon_ec2_container_service_for_ec2_role.arn, data.aws_iam_policy.amazon_ec2_container_service_for_documentdb_role.arn]
   assume_role_policy  = data.aws_iam_policy_document.ecs_assume_role.json
 }
 
