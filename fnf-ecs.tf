@@ -213,12 +213,8 @@ resource "aws_ecs_task_definition" "fnf-ms-pagamento-task-definition" {
           "value": "${data.terraform_remote_state.network.outputs.fnf-alb_dns_name}"
         },
         {
-          "name": "DYNAMODB_URI",
-          "value": "${data.terraform_remote_state.storage.outputs.fnf-doc-cluster-pagamento_endpoint}"
-        },
-        {
-          "name": "DYNAMODB_PASSWORD",
-          "value": "${data.terraform_remote_state.storage.outputs.fnf-doc-cluster-pagamento_master_password}"
+          "name": "DOCUMENTDB_URI",
+          "value": "mongodb://${data.terraform_remote_state.storage.outputs.fnf-doc-cluster-pagamento_master_username}:${data.terraform_remote_state.storage.outputs.fnf-doc-cluster-pagamento_master_password}@${data.terraform_remote_state.storage.outputs.fnf-doc-cluster-pagamento_endpoint}/pagamento-db?retryWrites=false"
         }
       ],
       "logConfiguration": {
