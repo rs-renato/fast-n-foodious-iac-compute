@@ -153,11 +153,11 @@ resource "aws_ecs_task_definition" "fnf-ms-produto-task-definition" {
         },
         {
           "name": "MYSQL_HOST",
-          "value": "${data.terraform_remote_state.storage.outputs.fnf-rds-cluster_endpoint}"
+          "value": "${data.terraform_remote_state.storage.outputs.fnf-rds-cluster-produto_endpoint}"
         },
         {
           "name": "MYSQL_PASSWORD",
-          "value": "${data.terraform_remote_state.storage.outputs.fnf-rds-cluster_master_password}"
+          "value": "${data.terraform_remote_state.storage.outputs.fnf-rds-cluster-produto_master_password}"
         }
       ],
       "logConfiguration": {
@@ -213,16 +213,8 @@ resource "aws_ecs_task_definition" "fnf-ms-pagamento-task-definition" {
           "value": "${data.terraform_remote_state.network.outputs.fnf-alb_dns_name}"
         },
         {
-          "name": "NODE_ENV",
-          "value": "prod"
-        },
-        {
-          "name": "MYSQL_HOST",
-          "value": "${data.terraform_remote_state.storage.outputs.fnf-rds-cluster_endpoint}"
-        },
-        {
-          "name": "MYSQL_PASSWORD",
-          "value": "${data.terraform_remote_state.storage.outputs.fnf-rds-cluster_master_password}"
+          "name": "DOCUMENTDB_URI",
+          "value": "mongodb://${data.terraform_remote_state.storage.outputs.fnf-doc-cluster-pagamento_master_username}:${data.terraform_remote_state.storage.outputs.fnf-doc-cluster-pagamento_master_password}@${data.terraform_remote_state.storage.outputs.fnf-doc-cluster-pagamento_endpoint}/pagamento-db?retryWrites=false"
         }
       ],
       "logConfiguration": {
@@ -287,11 +279,11 @@ resource "aws_ecs_task_definition" "fnf-ms-pedido-task-definition" {
         },
         {
           "name": "MYSQL_HOST",
-          "value": "${data.terraform_remote_state.storage.outputs.fnf-rds-cluster_endpoint}"
+          "value": "${data.terraform_remote_state.storage.outputs.fnf-rds-cluster-pedido_endpoint}"
         },
         {
           "name": "MYSQL_PASSWORD",
-          "value": "${data.terraform_remote_state.storage.outputs.fnf-rds-cluster_master_password}"
+          "value": "${data.terraform_remote_state.storage.outputs.fnf-rds-cluster-pedido_master_password}"
         }
       ],
       "logConfiguration": {
