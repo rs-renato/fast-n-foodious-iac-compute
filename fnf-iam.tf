@@ -132,6 +132,7 @@ resource "aws_iam_policy" "fnf-lambda-iam-policy" {
           "cognito-idp:AdminRespondToAuthChallenge",
           "cognito-idp:AdminUserGlobalSignOut",
           "cognito-idp:AdminCreateUser",
+          "cognito-idp:AdminDeleteUser",
           "cognito-idp:AdminSetUserPassword",
           "lambda:InvokeFunction"
       ],

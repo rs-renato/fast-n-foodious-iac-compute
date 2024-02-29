@@ -24,6 +24,12 @@ data "archive_file" "fnf-lambda-pre-signup-zip" {
   output_path = "${path.module}/fnf-lambda-pre-signup.zip"
 }
 
+data "archive_file" "fnf-lambda-delete-user-zip" {
+  type        = "zip"
+  source_file = "${path.module}/fnf-lambda-delete-user.js"
+  output_path = "${path.module}/fnf-lambda-delete-user.zip"
+}
+
 # configuracao de funcao lambda
 resource "aws_lambda_function" "fnf-lambda-authorizer" {
   function_name    = "fnf-lambda-authorizer"
@@ -46,6 +52,26 @@ resource "aws_lambda_function" "fnf-lambda-authorizer" {
   }
 }
 
+# configuracao de funcao lambda
+resource "aws_lambda_function" "fnf-lambda-delete-user" {
+  function_name    = "fnf-lambda-delete-user"
+  filename         = "${path.module}/${data.archive_file.fnf-lambda-delete-user-zip.output_path}"
+  source_code_hash = filebase64sha256("${path.module}/${data.archive_file.fnf-lambda-delete-user-zip.output_path}")
+  handler          = "fnf-lambda-delete-user.handler"
+  role             = aws_iam_role.fnf-lambda-iam-role.arn
+  runtime          = "nodejs16.x"
+  architectures    = [ "x86_64" ]
+  layers           = [ aws_lambda_layer_version.fnf-lambda-axios-layer.arn ]
+  depends_on = [ data.archive_file.fnf-lambda-delete-user-zip]
+    
+  environment {
+    variables = {
+      API_GATEWAY_URL = aws_apigatewayv2_stage.fnf-api-deployment.invoke_url
+      API_COGNITO_URL = "https://${aws_cognito_user_pool_domain.fnf-domain.domain}.auth.us-east-1.amazoncognito.com/"
+    }
+  }
+}
+
 resource "aws_lambda_function" "fnf-lambda-pre-signup" {
   function_name    = "fnf-lambda-pre-signup"
   filename         = "${path.module}/${data.archive_file.fnf-lambda-pre-signup-zip.output_path}"
@@ -56,15 +82,6 @@ resource "aws_lambda_function" "fnf-lambda-pre-signup" {
   architectures    = [ "x86_64" ]
   layers           = [ aws_lambda_layer_version.fnf-lambda-axios-layer.arn ]
   depends_on = [ data.archive_file.fnf-lambda-pre-signup-zip]
-    
-  # environment {
-  #   variables = {
-  #     CLIENT_ID = aws_cognito_user_pool_client.fnf-client.id
-  #     CLIENT_SECRET = aws_cognito_user_pool_client.fnf-client.client_secret
-  #     API_GATEWAY_URL = aws_apigatewayv2_stage.fnf-api-deployment.invoke_url
-  #     API_COGNITO_URL = "https://${aws_cognito_user_pool_domain.fnf-domain.domain}.auth.us-east-1.amazoncognito.com/"
-  #   }
-  # }
 }
 
 # configuracao de funcao lambda pre auth
