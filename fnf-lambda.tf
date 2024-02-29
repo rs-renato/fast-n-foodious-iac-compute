@@ -31,7 +31,7 @@ resource "aws_lambda_function" "fnf-lambda-authorizer" {
   source_code_hash = filebase64sha256("${path.module}/${data.archive_file.fnf-lambda-authorizer-zip.output_path}")
   handler          = "fnf-lambda-authorizer.handler"
   role             = aws_iam_role.fnf-lambda-iam-role.arn
-  runtime          = "nodejs14.x"
+  runtime          = "nodejs16.x"
   architectures    = [ "x86_64" ]
   layers           = [ aws_lambda_layer_version.fnf-lambda-axios-layer.arn ]
   depends_on = [ data.archive_file.fnf-lambda-authorizer-zip, aws_cognito_user.fnf-anonymouns-user]
@@ -52,7 +52,7 @@ resource "aws_lambda_function" "fnf-lambda-pre-signup" {
   source_code_hash = filebase64sha256("${path.module}/${data.archive_file.fnf-lambda-pre-signup-zip.output_path}")
   handler          = "fnf-lambda-pre-signup.handler"
   role             = aws_iam_role.fnf-lambda-iam-role.arn
-  runtime          = "nodejs14.x"
+  runtime          = "nodejs16.x"
   architectures    = [ "x86_64" ]
   layers           = [ aws_lambda_layer_version.fnf-lambda-axios-layer.arn ]
   depends_on = [ data.archive_file.fnf-lambda-pre-signup-zip]
@@ -74,7 +74,7 @@ resource "aws_lambda_function" "fnf-lambda-pre-token-authorizer" {
   source_code_hash = filebase64sha256("${path.module}/${data.archive_file.fnf-lambda-pre-token-authorizer-zip.output_path}")
   handler          = "fnf-lambda-pre-token-authorizer.handler"
   role             = aws_iam_role.fnf-lambda-iam-role.arn
-  runtime          = "nodejs14.x"
+  runtime          = "nodejs16.x"
   architectures    = [ "x86_64" ]
   layers           = [ aws_lambda_layer_version.fnf-lambda-axios-layer.arn ]
   depends_on = [ data.archive_file.fnf-lambda-pre-token-authorizer-zip]
@@ -88,7 +88,7 @@ resource "aws_lambda_function" "fnf-lambda-create-user" {
   source_code_hash = filebase64sha256("${path.module}/${data.archive_file.fnf-lambda-create-user-zip.output_path}")
   handler          = "fnf-lambda-create-user.handler"
   role             = aws_iam_role.fnf-lambda-iam-role.arn
-  runtime          = "nodejs14.x"
+  runtime          = "nodejs16.x"
   architectures    = [ "x86_64" ]
   depends_on = [ data.archive_file.fnf-lambda-create-user-zip, aws_cognito_user.fnf-anonymouns-user]
     
@@ -103,7 +103,7 @@ resource "aws_lambda_function" "fnf-lambda-create-user" {
 # configuracao de layer axios necessaria no lambda
 resource "aws_lambda_layer_version" "fnf-lambda-axios-layer" {
   layer_name = "axios"
-  compatible_runtimes = ["nodejs14.x"]
+  compatible_runtimes = ["nodejs16.x"]
   compatible_architectures = [ "x86_64" ]
   source_code_hash   = filebase64sha256("fnf-lambda-axios-layer.zip") 
   filename           = "fnf-lambda-axios-layer.zip"
