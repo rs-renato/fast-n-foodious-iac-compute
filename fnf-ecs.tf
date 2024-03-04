@@ -126,7 +126,7 @@ resource "aws_ecs_task_definition" "fnf-ms-produto-task-definition" {
     cpu_architecture = "X86_64"
     operating_system_family = "LINUX"
   }
-  depends_on = [ aws_iam_role.ecsTaskExecutionRole ]
+  depends_on = [ aws_iam_role.ecsTaskExecutionRole]
 
   container_definitions = <<EOF
   [
@@ -187,7 +187,7 @@ resource "aws_ecs_task_definition" "fnf-ms-pagamento-task-definition" {
     cpu_architecture = "X86_64"
     operating_system_family = "LINUX"
   }
-  depends_on = [ aws_iam_role.ecsTaskExecutionRole ]
+  depends_on = [ aws_iam_role.ecsTaskExecutionRole, aws_sqs_queue.fnf-solicitar-pagamento-req, aws_sqs_queue.fnf-webhook-pagamento-confirmado-res, aws_sqs_queue.fnf-webhook-pagamento-rejeitado-res ]
 
   container_definitions = <<EOF
   [
@@ -215,6 +215,18 @@ resource "aws_ecs_task_definition" "fnf-ms-pagamento-task-definition" {
         {
           "name": "DOCUMENTDB_URI",
           "value": "mongodb://${data.terraform_remote_state.storage.outputs.fnf-doc-cluster-pagamento_master_username}:${data.terraform_remote_state.storage.outputs.fnf-doc-cluster-pagamento_master_password}@${data.terraform_remote_state.storage.outputs.fnf-doc-cluster-pagamento_endpoint}/pagamento-db?retryWrites=false"
+        },
+        {
+          "name": "SQS_SOLICITAR_PAGAMENTO_REQ_URL",
+          "value": "${aws_sqs_queue.fnf-solicitar-pagamento-req.id}"
+        },
+        {
+          "name": "SQS_WEBHOOK_PAGAMENTO_CONFIRMADO_RES_URL",
+          "value": "${aws_sqs_queue.fnf-webhook-pagamento-confirmado-res.id}"
+        },
+        {
+          "name": "SQS_WEBHOOK_PAGAMENTO_REJEITADO_RES_URL",
+          "value": "${aws_sqs_queue.fnf-webhook-pagamento-rejeitado-res.id}"
         }
       ],
       "logConfiguration": {
@@ -244,7 +256,7 @@ resource "aws_ecs_task_definition" "fnf-ms-pedido-task-definition" {
     cpu_architecture = "X86_64"
     operating_system_family = "LINUX"
   }
-  depends_on = [ aws_iam_role.ecsTaskExecutionRole ]
+  depends_on = [ aws_iam_role.ecsTaskExecutionRole, aws_sqs_queue.fnf-solicitar-pagamento-req, aws_sqs_queue.fnf-webhook-pagamento-confirmado-res, aws_sqs_queue.fnf-webhook-pagamento-rejeitado-res, aws_sqs_queue.fnf-preparacao-pedido-req ]
 
   container_definitions = <<EOF
   [
@@ -284,6 +296,22 @@ resource "aws_ecs_task_definition" "fnf-ms-pedido-task-definition" {
         {
           "name": "MYSQL_PASSWORD",
           "value": "${data.terraform_remote_state.storage.outputs.fnf-rds-cluster-pedido_master_password}"
+        },
+        {
+          "name": "SQS_SOLICITAR_PAGAMENTO_REQ_URL",
+          "value": "${aws_sqs_queue.fnf-solicitar-pagamento-req.id}"
+        },
+        {
+          "name": "SQS_WEBHOOK_PAGAMENTO_CONFIRMADO_RES_URL",
+          "value": "${aws_sqs_queue.fnf-webhook-pagamento-confirmado-res.id}"
+        },
+        {
+          "name": "SQS_WEBHOOK_PAGAMENTO_REJEITADO_RES_URL",
+          "value": "${aws_sqs_queue.fnf-webhook-pagamento-rejeitado-res.id}"
+        },
+        {
+          "name": "SQS_PREPARACAO_PEDIDO_REQ_URL",
+          "value": "${aws_sqs_queue.fnf-preparacao-pedido-req.id}"
         }
       ],
       "logConfiguration": {

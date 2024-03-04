@@ -13,6 +13,15 @@ data "aws_iam_policy" "amazon_ec2_container_service_for_documentdb_role" {
   name = "AmazonDocDBElasticFullAccess"
 }
 
+# Default ECS Task Instance policy
+data "aws_iam_policy" "amazon_ec2_container_service_for_sqs_role" {
+  name = "AmazonSQSFullAccess"
+}
+
+# Default ECS Task Instance policy
+data "aws_iam_policy" "amazon_ec2_container_service_for_ses_role" {
+  name = "AmazonSESFullAccess"
+}
 
 data "aws_iam_policy_document" "ecs_assume_role" {
   statement {
@@ -58,8 +67,45 @@ resource "aws_iam_role" "fnf-lambda-iam-role" {
 
 resource "aws_iam_role" "ecs_instance_role" {
   name                = "ecsInstanceRole"
-  managed_policy_arns = [data.aws_iam_policy.amazon_ec2_container_service_for_ec2_role.arn, data.aws_iam_policy.amazon_ec2_container_service_for_documentdb_role.arn]
+  managed_policy_arns = [
+    data.aws_iam_policy.amazon_ec2_container_service_for_ec2_role.arn,
+    data.aws_iam_policy.amazon_ec2_container_service_for_documentdb_role.arn,
+    data.aws_iam_policy.amazon_ec2_container_service_for_sqs_role.arn,
+    data.aws_iam_policy.amazon_ec2_container_service_for_ses_role.arn,
+  ]
   assume_role_policy  = data.aws_iam_policy_document.ecs_assume_role.json
+}
+
+resource "aws_iam_policy" "fnf-sqs-policy" {
+  name        = "fnf-sqs-policy"
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "sqs:*"
+        ],
+        "Resource": "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "fnf-ses-policy" {
+  name        = "fnf-ses-policy"
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "ses:*"
+        ],
+        "Resource": "*"
+      }
+    ]
+  })
 }
 
 # configuracao de policy IAM para o lambda
@@ -86,6 +132,7 @@ resource "aws_iam_policy" "fnf-lambda-iam-policy" {
           "cognito-idp:AdminRespondToAuthChallenge",
           "cognito-idp:AdminUserGlobalSignOut",
           "cognito-idp:AdminCreateUser",
+          "cognito-idp:AdminDeleteUser",
           "cognito-idp:AdminSetUserPassword",
           "lambda:InvokeFunction"
       ],
@@ -164,4 +211,14 @@ resource "aws_iam_policy_attachment" "ecsTaskExecutionRolePolicyAttachmentCloudW
   name       = "AmazonECSTaskExecutionRolePolicyAttachment"
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
   roles      = [aws_iam_role.ecsTaskExecutionRole.name]
+}
+
+resource "aws_iam_role_policy_attachment" "fnf-sqs-policy-attachment" {
+  role       = aws_iam_role.ecs_instance_role.name
+  policy_arn = aws_iam_policy.fnf-sqs-policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "fnf-ses-policy-attachment" {
+  role       = aws_iam_role.ecs_instance_role.name
+  policy_arn = aws_iam_policy.fnf-ses-policy.arn
 }
