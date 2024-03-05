@@ -66,6 +66,7 @@ resource "aws_lambda_function" "fnf-lambda-delete-user" {
     
   environment {
     variables = {
+      POOL_ID = aws_cognito_user_pool.fnf-user-pool.id
       API_GATEWAY_URL = aws_apigatewayv2_stage.fnf-api-deployment.invoke_url
       API_COGNITO_URL = "https://${aws_cognito_user_pool_domain.fnf-domain.domain}.auth.us-east-1.amazoncognito.com/"
     }

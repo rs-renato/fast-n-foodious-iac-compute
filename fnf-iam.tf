@@ -182,6 +182,18 @@ resource "aws_lambda_permission" "fnf-lambda-create-user-permission-cognito" {
   principal     = "cognito-idp.amazonaws.com"
 }
 
+resource "aws_lambda_permission" "fnf-lambda-delete-user-permission" {
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.fnf-lambda-delete-user.function_name
+  principal     = "apigateway.amazonaws.com"
+}
+
+resource "aws_lambda_permission" "fnf-lambda-delete-user-permission-cognito" {
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.fnf-lambda-delete-user.function_name
+  principal     = "cognito-idp.amazonaws.com"
+}
+
 resource "aws_lambda_permission" "fnf-lambda-pre-signup-permission" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.fnf-lambda-pre-signup.function_name

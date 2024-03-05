@@ -142,7 +142,7 @@ resource "aws_apigatewayv2_route" "fnf-api-route-create-user" {
 }
 
 # rota deleção de user, em DELETE v2/cliente
-resource "aws_apigatewayv2_route" "fnf-api-route-create-user" {
+resource "aws_apigatewayv2_route" "fnf-api-route-delete-user" {
   api_id = aws_apigatewayv2_api.fnf-api.id
   route_key = "DELETE /v2/cliente"
   target = "integrations/${aws_apigatewayv2_integration.fnf-api-integration-delete-user.id}"

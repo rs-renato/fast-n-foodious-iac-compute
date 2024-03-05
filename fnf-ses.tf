@@ -1,5 +1,10 @@
-resource "aws_sesv2_email_identity" "fnf-ses-email-identity" {
+resource "aws_sesv2_email_identity" "fnf-ses-sender-email-identity" {
   email_identity = "sac.fast.n.foodious@gmail.com"
+  configuration_set_name = aws_sesv2_configuration_set.fnf-ses-configuration-set.configuration_set_name
+}
+
+resource "aws_sesv2_email_identity" "fnf-ses-client-email-identity" {
+  email_identity = "koliwe3521@fashlend.com"
   configuration_set_name = aws_sesv2_configuration_set.fnf-ses-configuration-set.configuration_set_name
 }
 

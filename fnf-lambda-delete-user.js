@@ -1,15 +1,13 @@
+const axios = require("axios");
 const AWS = require("aws-sdk");
 
 exports.handler = async (event) => {
     
-    const requestBody = JSON.parse(event.body);
-
     // obtencao de URLs do api gateway e cognito
     const apiGatewayUrl = process.env.API_GATEWAY_URL;
     const cognitoTokenUrl = `${process.env.API_COGNITO_URL}oauth2/token`;
     const client_id = process.env.CLIENT_ID
     const client_secret = process.env.CLIENT_SECRET
-    const cpf = requestBody.cpf;
 
     try {
 
@@ -25,17 +23,18 @@ exports.handler = async (event) => {
         });
         
         const token = response.data.access_token;
+        const cpf = event?.queryStringParameters?.cpf;
 
         // deleta usuario no sistema fast-n-foodious
-        response = await axios.delete(`${apiGatewayUrl}v1/cliente?cpf=${cpf}`, {
+        response = await axios.delete(`${apiGatewayUrl}v1/cliente/?cpf=${cpf}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
         }).then(async(response) => {
             try{
-
-                console.log(`Usuário deletado da aplicação: ${response}`);
+                
+                console.log(`Usuário deletado com sucesso na aplicação`);
 
                 const cognito = new AWS.CognitoIdentityServiceProvider({ region: "us-east-1" });
                 
@@ -45,8 +44,8 @@ exports.handler = async (event) => {
                 };
 
                 // cadastra usuario
-                var response = await cognito.adminDeleteUser(params).promise()
-                console.log('Usuario deletado no cognito', response)
+                await cognito.adminDeleteUser(params).promise()
+                console.log(`Usuário deletado com sucesso no cognito`);
 
                 return {
                     statusCode: 200,
@@ -74,6 +73,8 @@ exports.handler = async (event) => {
                 body: JSON.stringify({ message: 'Erro ao deletar cliente da aplicação' })
             };
         });
+
+    return response;
                
     } catch (error) {
         console.error('Erro ao deletar o cliente no FNF', error);
