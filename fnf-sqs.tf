@@ -22,6 +22,18 @@ resource "aws_sqs_queue" "fnf-preparacao-pedido-req" {
     })
 }
 
+resource "aws_sqs_queue" "fnf-lgpd-protocolo-delecao-req" {
+    name = "lgpd-protocolo-delecao-req.fifo"
+    fifo_queue = true
+    content_based_deduplication = true
+    visibility_timeout_seconds = 10
+    delay_seconds = 10
+    redrive_policy = jsonencode({
+        deadLetterTargetArn: aws_sqs_queue.fnf-sqs-dlq-fifo.arn
+        maxReceiveCount: 3
+    })
+}
+
 resource "aws_sqs_queue" "fnf-webhook-pagamento-rejeitado-res" {
     name = "webhook-pagamento-rejeitado-res"
     visibility_timeout_seconds = 10
@@ -68,7 +80,8 @@ resource "aws_sqs_queue_redrive_allow_policy" "fnf-solicitar-pagamento-redrive-a
     redrivePermission = "byQueue",
     sourceQueueArns   = [
         aws_sqs_queue.fnf-solicitar-pagamento-req.arn,
-        aws_sqs_queue.fnf-preparacao-pedido-req.arn
+        aws_sqs_queue.fnf-preparacao-pedido-req.arn,
+        aws_sqs_queue.fnf-lgpd-protocolo-delecao-req.arn
     ]
   })
 }

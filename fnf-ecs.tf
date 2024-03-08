@@ -256,7 +256,7 @@ resource "aws_ecs_task_definition" "fnf-ms-pedido-task-definition" {
     cpu_architecture = "X86_64"
     operating_system_family = "LINUX"
   }
-  depends_on = [ aws_iam_role.ecsTaskExecutionRole, aws_sqs_queue.fnf-solicitar-pagamento-req, aws_sqs_queue.fnf-webhook-pagamento-confirmado-res, aws_sqs_queue.fnf-webhook-pagamento-rejeitado-res, aws_sqs_queue.fnf-preparacao-pedido-req ]
+  depends_on = [ aws_iam_role.ecsTaskExecutionRole, aws_sqs_queue.fnf-solicitar-pagamento-req, aws_sqs_queue.fnf-webhook-pagamento-confirmado-res, aws_sqs_queue.fnf-webhook-pagamento-rejeitado-res, aws_sqs_queue.fnf-preparacao-pedido-req, aws_sqs_queue.fnf-lgpd-protocolo-delecao-req ]
 
   container_definitions = <<EOF
   [
@@ -312,6 +312,10 @@ resource "aws_ecs_task_definition" "fnf-ms-pedido-task-definition" {
         {
           "name": "SQS_PREPARACAO_PEDIDO_REQ_URL",
           "value": "${aws_sqs_queue.fnf-preparacao-pedido-req.id}"
+        },
+        {
+          "name": "SQS_LGPD_PROTOCOLO_DELECAO_REQ_URL",
+          "value": "${aws_sqs_queue.fnf-lgpd-protocolo-delecao-req.id}"
         }
       ],
       "logConfiguration": {

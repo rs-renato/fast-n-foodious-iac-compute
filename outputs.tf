@@ -27,6 +27,10 @@ output "fnf_sqs_preparacao_pedido_req_id" {
   value = aws_sqs_queue.fnf-preparacao-pedido-req.id
 }
 
+output "fnf_sqs_protocolo_delecao_req_id" {
+  value = aws_sqs_queue.fnf-lgpd-protocolo-delecao-req.id
+}
+
 output "fnf_sqs_webhook_pagamento_rejeitado_res_id" {
   value = aws_sqs_queue.fnf-webhook-pagamento-rejeitado-res.id
 }
