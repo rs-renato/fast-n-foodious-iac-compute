@@ -26,12 +26,12 @@ exports.handler = async (event) => {
         const cpf = event?.queryStringParameters?.cpf;
 
         // deleta usuario no sistema fast-n-foodious
-        response = await axios.delete(`${apiGatewayUrl}v1/cliente/?cpf=${cpf}`, {
+        await axios.delete(`${apiGatewayUrl}v1/cliente/?cpf=${cpf}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
-        }).then(async(response) => {
+        }).then(async(resp) => {
             try{
                 
                 console.log(`Usuário deletado com sucesso na aplicação`);
@@ -48,8 +48,8 @@ exports.handler = async (event) => {
                 console.log(`Usuário deletado com sucesso no cognito`);
 
                 return {
-                    statusCode: 200,
-                    body: true
+                    statusCode: resp.status,
+                    body: JSON.stringify(resp.data)
                 };
 
             } catch (error) {
@@ -73,8 +73,6 @@ exports.handler = async (event) => {
                 body: JSON.stringify({ message: 'Erro ao deletar cliente da aplicação' })
             };
         });
-
-    return response;
                
     } catch (error) {
         console.error('Erro ao deletar o cliente no FNF', error);
