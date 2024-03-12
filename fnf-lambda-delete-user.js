@@ -8,11 +8,12 @@ exports.handler = async (event) => {
     const cognitoTokenUrl = `${process.env.API_COGNITO_URL}oauth2/token`;
     const client_id = process.env.CLIENT_ID
     const client_secret = process.env.CLIENT_SECRET
+    let response
 
     try {
 
         // obtencao de token via cognito
-        var response = await axios.post(cognitoTokenUrl, null, {
+        var respAuth = await axios.post(cognitoTokenUrl, null, {
             params: {
                 grant_type: 'client_credentials'
             },
@@ -22,7 +23,7 @@ exports.handler = async (event) => {
             }
         });
         
-        const token = response.data.access_token;
+        const token = respAuth.data.access_token;
         const cpf = event?.queryStringParameters?.cpf;
 
         // deleta usuario no sistema fast-n-foodious
@@ -47,14 +48,17 @@ exports.handler = async (event) => {
                 await cognito.adminDeleteUser(params).promise()
                 console.log(`Usuário deletado com sucesso no cognito`);
 
-                return {
+                response = {
                     statusCode: resp.status,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify(resp.data)
                 };
 
             } catch (error) {
                 console.error('Erro ao deletar usuario no cognito', error)
-                return {
+                response = {
                     statusCode: 500,
                     headers: {
                         'Content-Type': 'application/json'
@@ -65,19 +69,18 @@ exports.handler = async (event) => {
         })
         .catch(error => {
             console.error('Erro ao deletar cliente da aplicação', error)
-            return {
-                statusCode: 500,
+            response = {
+                statusCode: error.response.status,
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ message: 'Erro ao deletar cliente da aplicação' })
+                body: JSON.stringify(error.response.data)
             };
         });
                
     } catch (error) {
-        console.error('Erro ao deletar o cliente no FNF', error);
-        // retorno de erro na falha de autenticacao
-        return {
+        console.error('Erro ao deletar o cliente', error);
+        response = {
             statusCode: 500,
             headers: {
                 'Content-Type': 'application/json'
@@ -85,4 +88,6 @@ exports.handler = async (event) => {
             body: JSON.stringify({ message: 'Erro ao deletar cliente' })
         };
     }
+
+    return response;
 };
