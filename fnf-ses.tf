@@ -4,7 +4,7 @@ resource "aws_sesv2_email_identity" "fnf-ses-sender-email-identity" {
 }
 
 resource "aws_sesv2_email_identity" "fnf-ses-client-email-identity" {
-  email_identity = "koliwe3521@fashlend.com"
+  email_identity = "gidawo6295@hisotyr.com"
   configuration_set_name = aws_sesv2_configuration_set.fnf-ses-configuration-set.configuration_set_name
 }
 
