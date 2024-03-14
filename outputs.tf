@@ -18,3 +18,31 @@ output "aws_cognito_user_pool_domain_fnf-domain_domain" {
 output "aws_cognito_user_pool_fnf-user-pool_id" {
   value = aws_cognito_user_pool.fnf-user-pool.id
 }
+
+output "fnf_sqs_solicitar_pagamento_req_id" {
+  value = aws_sqs_queue.fnf-solicitar-pagamento-req.id
+}
+
+output "fnf_sqs_preparacao_pedido_req_id" {
+  value = aws_sqs_queue.fnf-preparacao-pedido-req.id
+}
+
+output "fnf_sqs_protocolo_delecao_req_id" {
+  value = aws_sqs_queue.fnf-lgpd-protocolo-delecao-req.id
+}
+
+output "fnf_sqs_webhook_pagamento_rejeitado_res_id" {
+  value = aws_sqs_queue.fnf-webhook-pagamento-rejeitado-res.id
+}
+
+output "fnf_sqs_webhook_pagamento_confirmado_res_id" {
+  value = aws_sqs_queue.fnf-webhook-pagamento-confirmado-res.id
+}
+
+output "fnf_sqs_dlq_fifo_id" {
+  value = aws_sqs_queue.fnf-sqs-dlq-fifo.id
+}
+
+output "fnf_sqs_dlq_id" {
+  value = aws_sqs_queue.fnf-sqs-dlq.id
+}

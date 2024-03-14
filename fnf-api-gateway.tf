@@ -54,6 +54,16 @@ resource "aws_apigatewayv2_integration" "fnf-api-integration-create-user" {
   depends_on = [ aws_lambda_function.fnf-lambda-create-user ]
 }
 
+# integracao api gateway com o lambda create user, na rota DELETE v2/cliente
+resource "aws_apigatewayv2_integration" "fnf-api-integration-delete-user" {
+  api_id           = aws_apigatewayv2_api.fnf-api.id
+  integration_type = "AWS_PROXY"
+  integration_uri  = aws_lambda_function.fnf-lambda-delete-user.arn
+  integration_method = "DELETE" 
+  passthrough_behavior = "WHEN_NO_MATCH"
+  depends_on = [ aws_lambda_function.fnf-lambda-delete-user ]
+}
+
 # rota para todas os paths produto, com autenticacao/autorizacao JWT via Cognito
 resource "aws_apigatewayv2_route" "fnf-api-produto-route" {
   api_id = aws_apigatewayv2_api.fnf-api.id
@@ -121,11 +131,21 @@ resource "aws_apigatewayv2_route" "fnf-api-route-token" {
   target = "integrations/${aws_apigatewayv2_integration.fnf-api-integration-oauth.id}"
 }
 
-# rota ciarcao de user, em POST v2/cliente
+# rota criação de user, em POST v2/cliente
 resource "aws_apigatewayv2_route" "fnf-api-route-create-user" {
   api_id = aws_apigatewayv2_api.fnf-api.id
   route_key = "POST /v2/cliente"
   target = "integrations/${aws_apigatewayv2_integration.fnf-api-integration-create-user.id}"
+  authorizer_id = aws_apigatewayv2_authorizer.fnf-api-authorizer.id
+  depends_on = [ aws_apigatewayv2_authorizer.fnf-api-authorizer ]
+  authorization_type = "JWT"
+}
+
+# rota deleção de user, em DELETE v2/cliente
+resource "aws_apigatewayv2_route" "fnf-api-route-delete-user" {
+  api_id = aws_apigatewayv2_api.fnf-api.id
+  route_key = "DELETE /v2/cliente"
+  target = "integrations/${aws_apigatewayv2_integration.fnf-api-integration-delete-user.id}"
   authorizer_id = aws_apigatewayv2_authorizer.fnf-api-authorizer.id
   depends_on = [ aws_apigatewayv2_authorizer.fnf-api-authorizer ]
   authorization_type = "JWT"
