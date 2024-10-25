@@ -2,10 +2,10 @@
 
 ![Static Badge](https://img.shields.io/badge/IaC-black?style=for-the-badge) ![Terraform](https://img.shields.io/badge/terraform-%235835CC.svg?style=for-the-badge&logo=terraform&logoColor=white)
 
-# 🍔 Fast & Foodious - IaC Compute ![Github Actions](https://github.com/rodrigo-ottero/fast-n-foodious-iac-compute/actions/workflows/fnf-pipeline.yml/badge.svg?branch=main) ![Static Badge](https://img.shields.io/badge/v2.0.0-version?logo=&color=%232496ED&labelColor=white&label=fast-n-foodious-iac-compute)
+# 🍔 Fast & Foodious - IaC Compute ![Github Actions](https://github.com/rs-renato/fast-n-foodious-iac-compute/actions/workflows/fnf-pipeline.yml/badge.svg?branch=main) ![Static Badge](https://img.shields.io/badge/v2.0.0-version?logo=&color=%232496ED&labelColor=white&label=fast-n-foodious-iac-compute)
 Sistema de auto-atendimento de fast food. Projeto de conclusão da Fase 05 da pós gradução em Software Architecture.
 
-![fast-n-foodious-aws](https://github.com/rodrigo-ottero/fast-n-foodious-docs/blob/main/diagramas/png/fast-n-foodious-aws.png?raw=true)
+![fast-n-foodious-aws](https://github.com/rs-renato/fast-n-foodious-docs/blob/main/diagramas/png/fast-n-foodious-aws.png?raw=true)
 
 
 ## Recursos
@@ -32,17 +32,17 @@ fast-n-foodious-iac-compute
 
 ## Links Externos
 ### Micro Serviços
-- [fast-n-foodious-ms-produto](https://github.com/rodrigo-ottero/fast-n-foodious-ms-produto)
-- [fast-n-foodious-ms-pagamento](https://github.com/rodrigo-ottero/fast-n-foodious-ms-pagamento)
-- [fast-n-foodious-ms-pedido](https://github.com/rodrigo-ottero/fast-n-foodious-ms-pedido)
+- [fast-n-foodious-ms-produto](https://github.com/rs-renato/fast-n-foodious-ms-produto)
+- [fast-n-foodious-ms-pagamento](https://github.com/rs-renato/fast-n-foodious-ms-pagamento)
+- [fast-n-foodious-ms-pedido](https://github.com/rs-renato/fast-n-foodious-ms-pedido)
 
 ### IaC
-- [fast-n-foodious-iac-network](https://github.com/rodrigo-ottero/fast-n-foodious-iac-network)
-- [fast-n-foodious-iac-storage](https://github.com/rodrigo-ottero/fast-n-foodious-iac-storage)
-- [fast-n-foodious-iac-compute](https://github.com/rodrigo-ottero/fast-n-foodious-iac-compute)
+- [fast-n-foodious-iac-network](https://github.com/rs-renato/fast-n-foodious-iac-network)
+- [fast-n-foodious-iac-storage](https://github.com/rs-renato/fast-n-foodious-iac-storage)
+- [fast-n-foodious-iac-compute](https://github.com/rs-renato/fast-n-foodious-iac-compute)
 
 ### Documentação
-- [fast-n-foodious-docs](https://github.com/rodrigo-ottero/fast-n-foodious-docs)
+- [fast-n-foodious-docs](https://github.com/rs-renato/fast-n-foodious-docs)
 
 ### Sonar
 - [fast-n-foodious-ms-produto](https://sonarcloud.io/summary/overall?id=fast-n-foodious-org_ms-produto)
